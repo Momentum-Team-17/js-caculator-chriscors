@@ -4,9 +4,9 @@
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif, Arial,
     Helvetica, sans-serif;
   font-size: larger;
-  border-color: black;
+  /* border-color: black;
   border-style: solid;
-  border-width: 2px;
+  border-width: 2px; */
 }
 
 body {
@@ -18,7 +18,7 @@ body {
 section {
   display: flex;
   flex-direction: row;
-  width: 30%;
+  width: 400px;
 }
 
 div {
@@ -35,20 +35,22 @@ div {
   cursor: pointer;
 }
 
-.num,
-.large {
+.darkgreen {
   background-color: #61b350;
 }
-.num:hover {
+.num:hover,
+#clear:hover,
+#decimal:hover,
+#equals:hover {
   background-color: #82c276;
 }
 
-.operator {
+.lightgreen {
   background-color: #82c276;
   color: #42613b;
 }
 
-.operator:hover {
+.lightgreen:hover {
   color: white;
 }
 
