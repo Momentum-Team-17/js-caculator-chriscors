@@ -5,7 +5,7 @@ let displayNum = 0; //Number displayed on the calc
 let calculations = 0; //# Calculations performed in this calculation
 let computation = "base"; //Computation state
 
-let newEntry_flag = false; //If the number being entered is ongoing, ie, not just calculated, build the number, otherwise start a new value
+let newEntry_flag = true; //If the number being entered is ongoing, ie, not just calculated, build the number, otherwise start a new value
 let computed_flag = false; //Was the equals operater the last button clicked
 let operating_flag = false; //Was an operator button pushed
 
@@ -35,25 +35,36 @@ for (let num of nums) {
         computation = "base";
       }
     }
+    operating_flag = false;
     updateDisplay();
   });
 }
 
 //clear behavior
-let clear = document.querySelector("#clear");
-clear.addEventListener("click", function (event) {
+let c = document.querySelector("#clear");
+c.addEventListener("click", function (event) {
+  clear();
+});
+
+function clear() {
   total = 0;
   calc = 0;
   displayNum = 0;
   calculations = 0;
   computation = "base";
+  operating_flag = false;
   updateDisplay();
+  deactivate();
   console.log("total:", total, "Display:", displayNum);
-});
+}
 
 //decimal behavior
-let decimal = document.querySelector("#decimal");
-decimal.addEventListener("click", function (event) {
+let dec = document.querySelector("#decimal");
+dec.addEventListener("click", function (event) {
+  decimal();
+});
+
+function decimal() {
   if (!newEntry_flag) {
     displayNum = "".concat(displayNum + ".");
   } else {
@@ -62,47 +73,65 @@ decimal.addEventListener("click", function (event) {
   }
   updateDisplay();
   console.log("total:", total, "Display:", displayNum);
-});
+}
 
 //Plus behavior
 let plus = document.querySelector("#plus");
 plus.addEventListener("click", function (event) {
+  add();
+});
+
+function add() {
   computed_flag = false;
   operate();
   computation = "add";
   calculations++;
   compute();
-});
+  plus.classList.add("active");
+}
 
 //Minus behavior
 let minus = document.querySelector("#minus");
 minus.addEventListener("click", function (event) {
+  subtract();
+});
+function subtract() {
   computed_flag = false;
   operate();
   computation = "subtract";
   calculations++;
   compute();
-});
+  minus.classList.add("active");
+}
 
 //Times behavior
 let times = document.querySelector("#times");
 times.addEventListener("click", function (event) {
+  multiply();
+});
+
+function multiply() {
   computed_flag = false;
   operate();
   computation = "multiply";
   calculations++;
   compute();
-});
+  times.classList.add("active");
+}
 
 //Divide behavior
-let divide = document.querySelector("#divide");
-divide.addEventListener("click", function (event) {
+let slash = document.querySelector("#divide");
+slash.addEventListener("click", function (event) {
+  divide();
+});
+function divide() {
   computed_flag = false;
   operate();
   computation = "divide";
   calculations++;
   compute();
-});
+  slash.classList.add("active");
+}
 
 function compute() {
   displayNum = total;
@@ -112,37 +141,93 @@ function compute() {
 }
 
 //Equals behavior
-let equals = document.querySelector("#equals");
-equals.addEventListener("click", function (event) {
+let eq = document.querySelector("#equals");
+eq.addEventListener("click", function (event) {
+  equals();
+});
+
+function equals() {
   operate();
   displayNum = total;
   newEntry_flag = true;
   computed_flag = true;
   computation = "base";
   updateDisplay();
+  deactivate();
   console.log("total:", total, "Display:", displayNum);
-});
+}
 
 function operate() {
   if (!computed_flag) {
     switch (computation) {
       case "add":
-        total += Number(displayNum);
+        if (!operating_flag) {
+          total += Number(displayNum);
+        }
         break;
       case "subtract":
-        total -= Number(displayNum);
+        if (!operating_flag) {
+          total -= Number(displayNum);
+        }
         break;
       case "divide":
-        total /= Number(displayNum);
+        if (!operating_flag) {
+          total /= Number(displayNum);
+        }
         break;
       case "multiply":
-        total *= Number(displayNum);
+        if (!operating_flag) {
+          total *= Number(displayNum);
+        }
         break;
       case "base":
-        total = Number(displayNum);
+        if (!operating_flag) {
+          total = Number(displayNum);
+        }
         break;
       default:
         break;
     }
+    total = +Number(total).toFixed(5);
+    operating_flag = true;
   }
+}
+
+document.addEventListener("keyup", function (event) {
+  console.log("Key pressed:", event.key);
+
+  input = event.key;
+  if (Number.isNaN(Number(input)) === false) {
+    if (!newEntry_flag) {
+      displayNum = "".concat(displayNum + Number(input));
+    } else {
+      displayNum = Number(input);
+      newEntry_flag = false;
+      if (computed_flag) {
+        total = 0;
+        calculations = 0;
+        computed_flag = false;
+        computation = "base";
+      }
+    }
+    operating_flag = false;
+    updateDisplay();
+  } else if (input === "Backspace") {
+    clear();
+  } else if (input === "+") {
+    add();
+  } else if (input === "-") {
+    subtract;
+  } else if (input === "x" || input === "*") {
+    multiply();
+  } else if (input === "=" || input === "Enter") {
+    equals();
+  }
+});
+
+function deactivate() {
+  plus.classList.remove("active");
+  minus.classList.remove("active");
+  times.classList.remove("active");
+  slash.classList.remove("active");
 }
