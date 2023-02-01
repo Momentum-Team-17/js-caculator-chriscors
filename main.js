@@ -12,7 +12,12 @@ let decimaled_flag = false; //Is there a decimal in the equation
 //Update display content
 let output = document.querySelector("#output");
 function updateDisplay() {
-  output.textContent = displayNum;
+  let numTypeDN = Number(displayNum);
+  if (Math.abs(numTypeDN) < 1000000000) {
+    output.textContent = numTypeDN.toLocaleString("en-US");
+  } else {
+    output.textContent = numTypeDN.toExponential(4);
+  }
 }
 
 //Num behavior
@@ -22,11 +27,7 @@ for (let num of nums) {
   num.setAttribute("data-number", num.innerText);
   num.addEventListener("click", function (event) {
     if (!newEntry_flag) {
-      displayNum = "".concat(
-        //displayNum + Number(num.getAttribute("data-number"))
-        displayNum,
-        num.getAttribute("data-number")
-      );
+      displayNum = "".concat(displayNum, num.getAttribute("data-number"));
     } else {
       displayNum = Number(num.getAttribute("data-number"));
       newEntry_flag = false;
@@ -166,6 +167,7 @@ function equals() {
 }
 
 function operate() {
+  deactivate();
   if (!computed_flag) {
     switch (computation) {
       case "add":
