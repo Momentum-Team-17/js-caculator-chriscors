@@ -1,24 +1,13 @@
-//Collecting page elements
-
-// let num1 = document.querySelector("#1");
-// let num2 = document.querySelector("#2");
-// let num3 = document.querySelector("#3");
-// let num4 = document.querySelector("#4");
-// let num5 = document.querySelector("#5");
-// let num6 = document.querySelector("#6");
-// let num7 = document.querySelector("#7");
-// let num8 = document.querySelector("#8");
-// let num9 = document.querySelector("#9");
-// let num0 = document.querySelector("#0");
-
 //Vars
 let total = 0; //Number that tracks running total
 let calc = 0; //Number that is going to be added/subtracted/etc to the total
 let displayNum = 0; //Number displayed on the calc
-let newEntry = false; //If the number being entered is ongoing, ie, not just calculated, build the number, otherwise start a new value
-let computed = false; //Was the equals operater the last button clicked
 let calculations = 0; //# Calculations performed in this calculation
 let computation = "base"; //Computation state
+
+let newEntry_flag = false; //If the number being entered is ongoing, ie, not just calculated, build the number, otherwise start a new value
+let computed_flag = false; //Was the equals operater the last button clicked
+let operating_flag = false; //Was an operator button pushed
 
 //Update display content
 let output = document.querySelector("#output");
@@ -32,17 +21,17 @@ let nums = document.querySelectorAll(".num");
 for (let num of nums) {
   num.setAttribute("data-number", num.innerText);
   num.addEventListener("click", function (event) {
-    if (!newEntry) {
+    if (!newEntry_flag) {
       displayNum = "".concat(
         displayNum + Number(num.getAttribute("data-number"))
       );
     } else {
       displayNum = Number(num.getAttribute("data-number"));
-      newEntry = false;
-      if (computed) {
+      newEntry_flag = false;
+      if (computed_flag) {
         total = 0;
         calculations = 0;
-        computed = false;
+        computed_flag = false;
         computation = "base";
       }
     }
@@ -65,11 +54,11 @@ clear.addEventListener("click", function (event) {
 //decimal behavior
 let decimal = document.querySelector("#decimal");
 decimal.addEventListener("click", function (event) {
-  if (!newEntry) {
+  if (!newEntry_flag) {
     displayNum = "".concat(displayNum + ".");
   } else {
     displayNum = ".";
-    newEntry = false;
+    newEntry_flag = false;
   }
   updateDisplay();
   console.log("total:", total, "Display:", displayNum);
@@ -78,7 +67,7 @@ decimal.addEventListener("click", function (event) {
 //Plus behavior
 let plus = document.querySelector("#plus");
 plus.addEventListener("click", function (event) {
-  computed = false;
+  computed_flag = false;
   operate();
   computation = "add";
   calculations++;
@@ -88,7 +77,7 @@ plus.addEventListener("click", function (event) {
 //Minus behavior
 let minus = document.querySelector("#minus");
 minus.addEventListener("click", function (event) {
-  computed = false;
+  computed_flag = false;
   operate();
   computation = "subtract";
   calculations++;
@@ -98,7 +87,7 @@ minus.addEventListener("click", function (event) {
 //Times behavior
 let times = document.querySelector("#times");
 times.addEventListener("click", function (event) {
-  computed = false;
+  computed_flag = false;
   operate();
   computation = "multiply";
   calculations++;
@@ -108,7 +97,7 @@ times.addEventListener("click", function (event) {
 //Divide behavior
 let divide = document.querySelector("#divide");
 divide.addEventListener("click", function (event) {
-  computed = false;
+  computed_flag = false;
   operate();
   computation = "divide";
   calculations++;
@@ -117,7 +106,7 @@ divide.addEventListener("click", function (event) {
 
 function compute() {
   displayNum = total;
-  newEntry = true;
+  newEntry_flag = true;
   updateDisplay();
   console.log("total:", total, "Display:", displayNum);
 }
@@ -127,15 +116,15 @@ let equals = document.querySelector("#equals");
 equals.addEventListener("click", function (event) {
   operate();
   displayNum = total;
-  newEntry = true;
-  computed = true;
+  newEntry_flag = true;
+  computed_flag = true;
   computation = "base";
   updateDisplay();
   console.log("total:", total, "Display:", displayNum);
 });
 
 function operate() {
-  if (!computed) {
+  if (!computed_flag) {
     switch (computation) {
       case "add":
         total += Number(displayNum);
