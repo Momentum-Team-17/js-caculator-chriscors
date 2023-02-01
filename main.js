@@ -1,6 +1,5 @@
 //Vars
 let total = 0; //Number that tracks running total
-let calc = 0; //Number that is going to be added/subtracted/etc to the total
 let displayNum = 0; //Number displayed on the calc
 let calculations = 0; //# Calculations performed in this calculation
 let computation = "base"; //Computation state
@@ -8,6 +7,7 @@ let computation = "base"; //Computation state
 let newEntry_flag = true; //If the number being entered is ongoing, ie, not just calculated, build the number, otherwise start a new value
 let computed_flag = false; //Was the equals operater the last button clicked
 let operating_flag = false; //Was an operator button pushed
+let decimaled_flag = false; //Is there a decimal in the equation
 
 //Update display content
 let output = document.querySelector("#output");
@@ -23,7 +23,9 @@ for (let num of nums) {
   num.addEventListener("click", function (event) {
     if (!newEntry_flag) {
       displayNum = "".concat(
-        displayNum + Number(num.getAttribute("data-number"))
+        //displayNum + Number(num.getAttribute("data-number"))
+        displayNum,
+        num.getAttribute("data-number")
       );
     } else {
       displayNum = Number(num.getAttribute("data-number"));
@@ -48,11 +50,12 @@ c.addEventListener("click", function (event) {
 
 function clear() {
   total = 0;
-  calc = 0;
   displayNum = 0;
   calculations = 0;
   computation = "base";
+  newEntry_flag = true;
   operating_flag = false;
+  decimaled_flag = false;
   updateDisplay();
   deactivate();
   console.log("total:", total, "Display:", displayNum);
@@ -65,12 +68,17 @@ dec.addEventListener("click", function (event) {
 });
 
 function decimal() {
+  if (decimaled_flag) {
+    return;
+  }
+
   if (!newEntry_flag) {
     displayNum = "".concat(displayNum + ".");
   } else {
-    displayNum = ".";
+    displayNum = "0.";
     newEntry_flag = false;
   }
+  decimaled_flag = true;
   updateDisplay();
   console.log("total:", total, "Display:", displayNum);
 }
@@ -188,8 +196,9 @@ function operate() {
       default:
         break;
     }
-    total = +Number(total).toFixed(5);
+    total = +Number(total).toFixed(8);
     operating_flag = true;
+    decimaled_flag = false;
   }
 }
 
@@ -199,7 +208,7 @@ document.addEventListener("keyup", function (event) {
   input = event.key;
   if (Number.isNaN(Number(input)) === false) {
     if (!newEntry_flag) {
-      displayNum = "".concat(displayNum + Number(input));
+      displayNum = "".concat(displayNum, input);
     } else {
       displayNum = Number(input);
       newEntry_flag = false;
@@ -217,9 +226,11 @@ document.addEventListener("keyup", function (event) {
   } else if (input === "+") {
     add();
   } else if (input === "-") {
-    subtract;
+    subtract();
   } else if (input === "x" || input === "*") {
     multiply();
+  } else if (input === "/") {
+    divide();
   } else if (input === "=" || input === "Enter") {
     equals();
   }
